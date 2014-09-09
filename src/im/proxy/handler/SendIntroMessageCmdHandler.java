@@ -2,6 +2,7 @@ package im.proxy.handler;
 
 import im.proxy.db.SubscriberDAO;
 import im.proxy.umg.Client;
+import im.proxy.umg.util.NumberUtil;
 import im.proxy.umg.util.ResponseBuilder;
 
 import java.util.Map;
@@ -41,7 +42,8 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 			return;
 		}
 		
-		String umgResponse = new Client().sendRequest(refId, aMsisdn, bMsisdn, introMessage);
+		String umgResponse = new Client().sendRequest(refId, 
+				NumberUtil.normalize(aMsisdn), NumberUtil.normalize(bMsisdn), introMessage);
 		
 		if(!validateParam(umgResponse)) {
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
