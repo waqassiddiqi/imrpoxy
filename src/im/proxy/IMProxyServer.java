@@ -1,5 +1,7 @@
 package im.proxy;
 
+import im.proxy.handler.ProxyRequestHandler;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ResourceBundle;
@@ -44,8 +46,8 @@ public class IMProxyServer {
 			log.info("IMProxyServer started at port: " + this.mPort);
 			while (true) {
 				Socket clientSocket = this.mListenSocket.accept();
-				//ProvisioningRequestHandler req = new ProvisioningRequestHandler(clientSocket);
-				//this.mRequestPool.execute(req);
+				ProxyRequestHandler req = new ProxyRequestHandler(clientSocket);
+				this.mRequestPool.execute(req);
 			}
 		} catch (Exception ex) {
 			log.error(ex.getMessage(), ex);

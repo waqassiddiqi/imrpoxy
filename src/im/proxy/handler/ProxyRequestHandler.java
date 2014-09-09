@@ -1,5 +1,7 @@
 package im.proxy.handler;
 
+import im.proxy.umg.util.ResponseBuilder;
+
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.apache.log4j.Logger;
+import org.apache.log4j.MDC;
 import org.xml.sax.InputSource;
 
 public class ProxyRequestHandler implements Runnable {
@@ -68,35 +71,44 @@ public class ProxyRequestHandler implements Runnable {
 	    XPath xpath = xpathFactory.newXPath();
 	    String aMsisdn = "";
 	    String bMsisdn = "";
+	    String refId = "";
+	    CommandHandler cmdHandler = null;	    
+	    Map<String, String> commandParams = new HashMap<String, String>();
 	    
-		InputSource source = new InputSource(new StringReader(xml));
-		
-		String function = xpath.evaluate("/methodCall/function", source);
-		
-		CommandHandler cmdHandler = null;
-		
-		Map<String, String> commandParams = new HashMap<String, String>();
+		InputSource source = new InputSource(new StringReader(xml));		
+		refId = xpath.evaluate("/methodCall/refId", source);
+		commandParams.put("refId", refId);
 		
 		source = new InputSource(new StringReader(xml));
 		aMsisdn = xpath.evaluate("/methodCall/aMsisdn", source);
-		commandParams.put("msisdn", aMsisdn);
+		commandParams.put("aMsisdn", aMsisdn);
 		
 		source = new InputSource(new StringReader(xml));
 		bMsisdn = xpath.evaluate("/methodCall/bMsisdn", source);
-		commandParams.put("channel", bMsisdn);
+		commandParams.put("bMsisdn", bMsisdn);
 		
-		cmdHandler = new SendIntroMessageCommandHandler(commandParams);
+		MDC.put("refId", refId);
+		
+		cmdHandler = new SendIntroMessageCmdHandler(commandParams);
 		
 		String commandResponse = "";
 		if(cmdHandler != null) {
 			try {
-				commandResponse = cmdHandler.execute();
+				cmdHandler.execute();
+				
+				commandResponse = ResponseBuilder.buildResponses(cmdHandler.getResponses());
+				
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 				
-				commandResponse = "Error";
+				commandResponse = ResponseBuilder.buildResponses(new String[] {
+							ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
+									ResponseBuilder.RESULTCODE_ERROR, "")
+				});
 			}
 		}
+		
+		MDC.remove("refId");
 		
 		return commandResponse;
 	}
