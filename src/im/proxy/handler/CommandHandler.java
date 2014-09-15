@@ -7,6 +7,7 @@ import java.util.Map;
 public abstract class CommandHandler {
 	Map<String, String> requestParameters;
 	List<String> responses = new ArrayList<String>();
+	private String resultCode = "";
 	
 	public CommandHandler(Map<String, String> requestParameters) {
 		this.requestParameters = requestParameters;
@@ -20,5 +21,13 @@ public abstract class CommandHandler {
 		return this.responses;
 	}
 	
+	public String getResultCode() {
+		return resultCode;
+	}
+
+	public void setResultCode(String resultCode) {
+		this.resultCode = resultCode;
+	}
+
 	public abstract void execute();
 }

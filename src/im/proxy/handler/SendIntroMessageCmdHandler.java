@@ -20,6 +20,7 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 		String refId = this.requestParameters.get("refId");
 		
 		if(!validateParam(aMsisdn)) {
+			setResultCode(ResponseBuilder.RESULTCODE_APARTY_MSISDN_MISSING);
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_APARTY_MSISDN_MISSING, ""));
 			
@@ -27,6 +28,7 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 		}
 		
 		if(!validateParam(bMsisdn)) {
+			setResultCode(ResponseBuilder.RESULTCODE_BPARTY_MSISDN_MISSING);
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_BPARTY_MSISDN_MISSING, ""));
 			
@@ -37,6 +39,7 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 				NumberUtil.normalize(bMsisdn));
 		
 		if(!validateParam(introMessage)) {
+			setResultCode(ResponseBuilder.RESULTCODE_INTRO_MESSAGE_NOT_FOUND);
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_INTRO_MESSAGE_NOT_FOUND, ""));
 			
@@ -47,9 +50,11 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 				NumberUtil.normalize(aMsisdn), NumberUtil.normalize(bMsisdn), introMessage);
 		
 		if(!validateParam(umgResponse)) {
+			setResultCode(ResponseBuilder.RESULTCODE_ERROR);
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_ERROR, ""));		
 		} else {
+			setResultCode(ResponseBuilder.RESULT_SUCCESS);
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_SUCCESS, 
 					ResponseBuilder.RESULTCODE_SUCCESS, umgResponse));
 		}

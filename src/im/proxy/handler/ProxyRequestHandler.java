@@ -96,11 +96,14 @@ public class ProxyRequestHandler implements Runnable {
 				new String[] { refId, "IN", aMsisdn, bMsisdn });
 		
 		String commandResponse = "";
+		String resultCode = ResponseBuilder.RESULTCODE_ERROR;
+		
 		if(cmdHandler != null) {
 			try {
 				cmdHandler.execute();
 				
 				commandResponse = ResponseBuilder.buildResponses(cmdHandler.getResponses());
+				resultCode = cmdHandler.getResultCode(); 
 				
 			} catch (Exception e) {
 				log.error(e.getMessage(), e);
@@ -113,7 +116,7 @@ public class ProxyRequestHandler implements Runnable {
 		}
 		
 		CDRGenerator.getInstance().generate(
-				new String[] { refId, "OUT", aMsisdn, bMsisdn, commandResponse });
+				new String[] { refId, "OUT", aMsisdn, bMsisdn, resultCode });
 		
 		MDC.remove("refId");
 		
