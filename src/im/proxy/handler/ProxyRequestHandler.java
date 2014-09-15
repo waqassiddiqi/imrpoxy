@@ -1,5 +1,6 @@
 package im.proxy.handler;
 
+import im.proxy.umg.util.CDRGenerator;
 import im.proxy.umg.util.ResponseBuilder;
 
 import java.io.BufferedReader;
@@ -91,6 +92,9 @@ public class ProxyRequestHandler implements Runnable {
 		
 		cmdHandler = new SendIntroMessageCmdHandler(commandParams);
 		
+		CDRGenerator.getInstance().generate(
+				new String[] { refId, "IN", aMsisdn, bMsisdn });
+		
 		String commandResponse = "";
 		if(cmdHandler != null) {
 			try {
@@ -107,6 +111,9 @@ public class ProxyRequestHandler implements Runnable {
 				});
 			}
 		}
+		
+		CDRGenerator.getInstance().generate(
+				new String[] { refId, "OUT", aMsisdn, bMsisdn, commandResponse });
 		
 		MDC.remove("refId");
 		

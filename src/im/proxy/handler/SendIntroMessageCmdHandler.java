@@ -33,7 +33,8 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 			return;
 		}
 		
-		String introMessage = new SubscriberDAO().getIntroductionMessage(aMsisdn, bMsisdn);
+		String introMessage = new SubscriberDAO().getIntroductionMessage(NumberUtil.normalize(aMsisdn), 
+				NumberUtil.normalize(bMsisdn));
 		
 		if(!validateParam(introMessage)) {
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 

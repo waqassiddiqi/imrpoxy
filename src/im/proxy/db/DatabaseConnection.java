@@ -1,14 +1,14 @@
 package im.proxy.db;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
 public class DatabaseConnection {
-	private BasicDataSource ds;
+	private static Connection connection = null;
 	private static DatabaseConnection instance = null;
 	private Logger log;
 	private String dbUsername;
@@ -17,22 +17,8 @@ public class DatabaseConnection {
 	private String dbPort;
 	private String dbName;
 	
-	private DatabaseConnection() {
+	public DatabaseConnection() {
 		log = Logger.getLogger(getClass().getName());
-		
-		readConfig();
-		
-		log.info("Initializing DB connection pool...");
-		
-		ds = new BasicDataSource();
-		ds.setDriverClassName("com.mysql.jdbc.Driver");
-		ds.setUsername(dbUsername);
-		ds.setPassword(dbPassword);
-		ds.setUrl("jdbc:mysql://" + this.dbUrl + ":" + this.dbPort + "/" + this.dbName);
-		
-		ds.setMinIdle(5);
-        ds.setMaxIdle(20);
-        ds.setMaxOpenPreparedStatements(180);
 	}
 	
 	private void readConfig() {
@@ -51,7 +37,59 @@ public class DatabaseConnection {
 		return instance;
 	}
 	
-	public Connection getConnection() throws SQLException {
-		return this.ds.getConnection();
+	public Connection getConnection() {
+		if(!isConnected()) {
+			connect();
+		} 
+		return connection;
+	}
+	
+	public boolean isConnected() {
+		try {
+			return (connection != null) && !connection.isClosed();
+		} catch (SQLException e) {
+			log.warn("DatabaseConnection: Connection check failed: " + e.getMessage(), e);
+			return false;
+		}
+	}
+	
+	public synchronized boolean connect() {
+		if(!isConnected()) {
+			try {
+				readConfig();
+				
+				Class.forName("com.mysql.jdbc.Driver");
+				
+				String url = "jdbc:mysql://" + this.dbUrl + ":" + this.dbPort + "/" + this.dbName + "?user=" + this.dbUsername 
+						+ "&password=" + this.dbPassword;
+				
+				log.info("DatabaseConnection: Connecting to " + url);
+				
+				connection = DriverManager.getConnection(url);
+				
+			} catch (SQLException e) {
+				
+				log.error("DatabaseConnection: Connection failed: " + e.getMessage(), e);
+				return false;
+				
+			} catch (ClassNotFoundException e) {
+				log.error("DatabaseConnection: Driver nod found: " + e.getMessage(), e);
+				return false;
+			}
+		} else {
+			log.info("DatabaseConnection: already connected");
+		}
+		return true;
+	}
+	
+	public synchronized void close() {
+		if(isConnected()) {
+			try {
+				connection.close();
+			} catch (SQLException e) {
+				log.error("DatabaseConnection: Connection closure failed: " + e.getMessage(), e);
+				e.printStackTrace();
+			}
+		}
 	}
 }
