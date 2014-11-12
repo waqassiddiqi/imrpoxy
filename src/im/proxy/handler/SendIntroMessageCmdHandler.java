@@ -43,6 +43,12 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 			addResponse(ResponseBuilder.build(ResponseBuilder.RESULT_FAILED, 
 					ResponseBuilder.RESULTCODE_INTRO_MESSAGE_NOT_FOUND, ""));
 			
+			
+			String xmlRequest = "<methodCall><shortcode>6060</shortcode><function>sendMessage</function>"
+					+ "<channel>SMS</channel><apartyMSISDN>" + NumberUtil.normalize(aMsisdn) + "</apartyMSISDN><refID>"
+							+ refId + "</refID><mtMessage>Aap nay Intro Me set nahi kia huwa, Intro Me ka message set kernay kay liye *6060# mila k manpasand message ya greeting set kijye@Rs.2.99 Bama Tax Haftawar and Rs.2.39 Bama Tax/Min</mtMessage></methodCall>";			
+			new im.proxy.provgw.Client().sendRequest(xmlRequest, refId);
+			
 			return;
 		}
 		

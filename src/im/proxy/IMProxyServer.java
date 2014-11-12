@@ -1,5 +1,6 @@
 package im.proxy;
 
+import im.proxy.db.DatabaseHeartbeat;
 import im.proxy.handler.ProxyRequestHandler;
 
 import java.net.ServerSocket;
@@ -57,6 +58,7 @@ public class IMProxyServer {
 	}
 
 	public static void main(String[] args) {
-		new IMProxyServer().startServer();
+		new IMProxyServer().startServer();		
+		new Thread(new DatabaseHeartbeat()).start();
 	}
 }
