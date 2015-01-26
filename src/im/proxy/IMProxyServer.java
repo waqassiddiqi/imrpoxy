@@ -58,7 +58,7 @@ public class IMProxyServer {
 	}
 
 	public static void main(String[] args) {
-		new IMProxyServer().startServer();		
 		new Thread(new DatabaseHeartbeat()).start();
+		new IMProxyServer().startServer();				
 	}
 }

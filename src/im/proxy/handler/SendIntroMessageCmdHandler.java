@@ -6,8 +6,20 @@ import im.proxy.umg.util.NumberUtil;
 import im.proxy.umg.util.ResponseBuilder;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 
 public class SendIntroMessageCmdHandler extends CommandHandler {
+	
+	private static String mNoIntroMessageFoundAlert = "Aap nay Intro Me set nahi kia huwa, Intro message set kernay k liay *6060# mila k manpasand message ya greeting set kijiye aur champion users set intro <intro message> e.g. set intro Hey, This is Naureen likh kar 6064 par send karain.";
+	
+	static {
+		try {
+			ResourceBundle myResources = ResourceBundle.getBundle("improxy");
+			mNoIntroMessageFoundAlert = myResources.getString("sms.no_intro");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public SendIntroMessageCmdHandler(Map<String, String> requestParameters) {
 		super(requestParameters);
@@ -46,7 +58,7 @@ public class SendIntroMessageCmdHandler extends CommandHandler {
 			
 			String xmlRequest = "<methodCall><shortcode>6060</shortcode><function>sendMessage</function>"
 					+ "<channel>SMS</channel><apartyMSISDN>" + NumberUtil.normalize(aMsisdn) + "</apartyMSISDN><refID>"
-							+ refId + "</refID><mtMessage>Aap nay Intro Me set nahi kia huwa, Intro Me ka message set kernay kay liye *6060# mila k manpasand message ya greeting set kijye@Rs.2.99 Bama Tax Haftawar and Rs.2.39 Bama Tax/Min</mtMessage></methodCall>";			
+							+ refId + "</refID><mtMessage>" + mNoIntroMessageFoundAlert + "</mtMessage></methodCall>";			
 			new im.proxy.provgw.Client().sendRequest(xmlRequest, refId);
 			
 			return;

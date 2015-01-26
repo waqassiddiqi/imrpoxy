@@ -38,7 +38,7 @@ public class DatabaseHeartbeat implements Runnable {
 				stmt = DatabaseConnection.getInstance().getConnection().createStatement();
 				stmt.execute("SELECT code, msg FROM sms_notification WHERE language=1");
 				
-			} catch (SQLException e) {
+			} catch (Exception e) {
 				log.error(e.getMessage(), e);
 			} finally {
 				if(stmt != null)
